@@ -35,7 +35,7 @@
 ### Quick Install:
 ```bash
 # Clone the repository.
-git clone https://github.com/Nullkernel/TerminalX.git
+git clone https://github.com/amalbijoy/TerminalX.git
 cd TerminalX
 
 # Install optional dependencies (recommended).
