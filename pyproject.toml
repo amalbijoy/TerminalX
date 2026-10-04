@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "terminalx"
+version = "1.1.0"
+description = "A cross-platform terminal environment inspired by Windows CMD."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "GPL-3.0-only" }
+authors = [{ name = "Amal Bijoy" }]
+dependencies = ["psutil>=5.9"]
+
+[project.scripts]
+terminalx = "TerminalX:main"
