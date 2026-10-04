@@ -434,6 +434,22 @@ def cmd_time(args=""):
 
 # ========== PROCESS MANAGEMENT COMMANDS ==========
 
+def _run_external_command(command_line):
+    """Run an external executable without invoking a shell."""
+    try:
+        parts = shlex.split(command_line, posix=(os.name != "nt"))
+    except ValueError as exc:
+        print(f"{COLOR_CODES['red']}Invalid command syntax: {exc}{COLOR_CODES['default']}")
+        return
+    if not parts:
+        return
+    try:
+        subprocess.run(parts, shell=False, check=False)
+    except FileNotFoundError:
+        print(f"{COLOR_CODES['red']}'{parts[0]}' is not recognized as an executable command.{COLOR_CODES['default']}")
+    except OSError as exc:
+        print(f"{COLOR_CODES['red']}Command failed: {exc}{COLOR_CODES['default']}")
+
 def cmd_tasklist(args=""):
     """Display running processes (equivalent to Windows TASKLIST command)"""
     try:
@@ -454,9 +470,9 @@ def cmd_tasklist(args=""):
         print(f"{COLOR_CODES['yellow']}Process listing requires psutil module.{COLOR_CODES['default']}")
         print("Alternative: Using basic process listing...")
         if platform.system().lower() == 'windows':
-            os.system('tasklist')
+            subprocess.run(['tasklist'], shell=False, check=False)
         else:
-            os.system('ps aux')
+            subprocess.run(['ps', 'aux'], shell=False, check=False)
 
 def cmd_taskkill(args=""):
     """Terminate processes (equivalent to Windows TASKKILL command)"""
@@ -557,13 +573,13 @@ def cmd_netstat(args=""):
     """Display network statistics (equivalent to Windows NETSTAT command)"""
     try:
         if platform.system().lower() == 'windows':
-            os.system(f'netstat {args}')
+            subprocess.run(['netstat', *shlex.split(args, posix=(os.name != 'nt'))], shell=False, check=False)
         else:
             # Linux/Mac equivalent
             if args:
-                os.system(f'netstat {args}')
+                subprocess.run(['netstat', *shlex.split(args, posix=(os.name != 'nt'))], shell=False, check=False)
             else:
-                os.system('netstat -tuln')
+                subprocess.run(['netstat', '-tuln'], shell=False, check=False)
     except Exception as e:
         print(f"{COLOR_CODES['red']}Error: {e}{COLOR_CODES['default']}")
 
@@ -1144,7 +1160,7 @@ def main():
             else:
                 # Try to execute as system command
                 try:
-                    os.system(user_input)
+                    _run_external_command(user_input)
                 except Exception as e:
                     print(f"{COLOR_CODES['red']}'{command}' is not recognized as an internal or external command,")
                     print(f"operable program or batch file.{COLOR_CODES['default']}")
